@@ -1,0 +1,165 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+
+  min-width: 280px;
+  max-width: 400px;
+
+  padding: 14px 18px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  z-index: 9999;
+  overflow: hidden;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.toast::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  height: 3px;
+  width: 100%;
+
+  background: currentColor;
+
+  animation: toast-progress 3s linear forwards;
+}
+
+@keyframes toast-progress {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
+}
+
+.toast.success {
+  background: #eaf4ff;
+  color: #1769aa;
+  border: 1px solid #b9dcff;
+}
+
+.toast.error {
+  background: #fff0f0;
+  color: #d32f2f;
+  border: 1px solid #ffc4c4;
+}
+
+
+
+
+.users-page {
+  min-height: 100vh;
+  padding: 50px;
+  background: #f3f6fa;
+}
+
+.users-page h1 {
+  font-size: 30px;
+  margin-bottom: 20px;
+  color: #172033;
+}
+
+
+
+.users-page button {
+  padding: 10px 20px;
+  margin-bottom: 25px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.users-page button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+
+
+
+.users-page table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  background: white;
+
+  border-radius: 10px;
+  overflow: hidden;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.users-page th {
+  padding: 15px 18px;
+
+  background: #172033;
+  color: white;
+
+  text-align: left;
+
+  font-size: 14px;
+}
+
+.users-page td {
+  padding: 15px 18px;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  color: #374151;
+
+  font-size: 14px;
+}
+
+.users-page tbody tr:hover {
+  background: #f8fafc;
+}
+
+.users-page tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+
+
+@media (max-width: 768px) {
+  .users-page {
+    padding: 30px 15px;
+    overflow-x: auto;
+  }
+
+  .users-page table {
+    min-width: 700px;
+  }
+}
