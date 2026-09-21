@@ -308,6 +308,29 @@ body {
 
 
 
+.field-error {
+  margin-top: 6px;
+
+  font-size: 13px;
+  line-height: 1.4;
+
+  color: #d32f2f;
+}
+
+
+.form-group input.input-error {
+  border-color: #d32f2f;
+}
+
+.form-group input.input-error:focus {
+  border-color: #d32f2f;
+
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+
+
+
 
 @media (max-width: 480px) {
   .auth-page {
