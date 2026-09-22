@@ -47,8 +47,13 @@ function UsersPage() {
   }, []);
 
   if (loading) {
-    return <h2>Loading users...</h2>;
-  }
+  return (
+    <div className="users-loading">
+      <div className="loading-spinner"></div>
+      <p>Loading users...</p>
+    </div>
+  );
+}
 
   if (error) {
     return <h2>{error}</h2>;

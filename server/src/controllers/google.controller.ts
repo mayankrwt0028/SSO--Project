@@ -98,11 +98,15 @@ const token = jwt.sign(
      })
 
   return res.redirect("http://localhost:5173")
-  } catch (error) {
-    console.error("Google callback error:", error);
+  } catch (error:any) {
+    console.error("GOOGLE CALLBACK ERROR");
+  console.error("name:", error?.name);
+  console.error("message:", error?.message);
+  console.error("stack:", error?.stack);
+  console.error("full error:", error);
 
-    return res.status(500).json({
-      message: "Google authentication failed",
-    });
+  return res.status(500).json({
+    message: "Google authentication failed",
+  });
   }
 }

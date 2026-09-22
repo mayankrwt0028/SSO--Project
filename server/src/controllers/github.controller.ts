@@ -146,11 +146,15 @@ export const githubCallback = async (
     });
 
    return res.redirect("http://localhost:5173");
-  } catch (error) {
-    console.error("GitHub callback error:", error);
+  } catch (error: any) {
+    console.error("GITHUB CALLBACK ERROR");
+  console.error("name:", error?.name);
+  console.error("message:", error?.message);
+  console.error("stack:", error?.stack);
+  console.error("full error:", error);
 
-    return res.status(500).json({
-      message: "GitHub authentication failed",
-    });
+  return res.status(500).json({
+    message: "GitHub authentication failed",
+  });
   }
 };

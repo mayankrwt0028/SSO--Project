@@ -87,33 +87,35 @@ function AuthPage() {
     return "";
   };
 
-  const validateForm = () => {
-    const newErrors: FormErrors = {};
+ const validateForm = () => {
+  const newErrors: FormErrors = {};
 
-    if (!isLogin) {
-      const nameError = validateName(name);
+  if (!isLogin) {
+    const nameError = validateName(name);
 
-      if (nameError) {
-        newErrors.name = nameError;
-      }
+    if (nameError) {
+      newErrors.name = nameError;
     }
+  }
 
-    const emailError = validateEmail(email);
+  const emailError = validateEmail(email);
 
-    if (emailError) {
-      newErrors.email = emailError;
-    }
+  if (emailError) {
+    newErrors.email = emailError;
+  }
 
+  if (isLogin) {
     const passwordError = validatePassword(password);
 
     if (passwordError) {
       newErrors.password = passwordError;
     }
+  }
 
-    setErrors(newErrors);
+  setErrors(newErrors);
 
-    return Object.keys(newErrors).length === 0;
-  };
+  return Object.keys(newErrors).length === 0;
+};
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -141,7 +143,7 @@ function AuthPage() {
         : {
             name: name.trim(),
             email: email.trim(),
-            password,
+            
           };
 
       const response = await fetch(
@@ -158,53 +160,14 @@ function AuthPage() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        if (
-          isLogin &&
-          response.status === 401
-        ) {
-          setErrors({
-            password:
-              data.message ||
-              "Invalid email or password",
-          });
+     if (!response.ok) {
+  setToast({
+    type: "error",
+    message: data.message || "Something went wrong",
+  });
 
-          return;
-        }
-
-        if (
-          response.status === 400 &&
-          data.message?.includes(
-            "original login method"
-          )
-        ) {
-          setErrors({
-            email: data.message,
-          });
-
-          return;
-        }
-
-        if (
-          !isLogin &&
-          response.status === 409
-        ) {
-          setErrors({
-            email:
-              "An account already exists with this email",
-          });
-
-          return;
-        }
-
-        setErrors({
-          email:
-            data.message ||
-            "Something went wrong",
-        });
-
-        return;
-      }
+  return;
+}
 
       if (isLogin) {
         setUser(data.user);
@@ -350,100 +313,75 @@ function AuthPage() {
             : "Create your account to get started"}
         </p>
 
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <div className="form-group">
-              <label>Name</label>
+      <form onSubmit={handleSubmit}>
+  {!isLogin && (
+    <div className="form-group">
+      <label>Name</label>
+      <input
+        type="text"
+        placeholder="Enter your name"
+        value={name}
+        className={errors.name ? "input-error" : ""}
+        onChange={(e) => handleNameChange(e.target.value)}
+      />
 
-              <input
-                type="text"
-                placeholder="Enter your name"
-                value={name}
-                className={
-                  errors.name
-                    ? "input-error"
-                    : ""
-                }
-                onChange={(e) =>
-                  handleNameChange(
-                    e.target.value
-                  )
-                }
-              />
+      {errors.name && (
+        <p className="field-error">
+          {errors.name}
+        </p>
+      )}
+    </div>
+  )}
 
-              {errors.name && (
-                <p className="field-error">
-                  {errors.name}
-                </p>
-              )}
-            </div>
-          )}
+  <div className="form-group">
+    <label>Email</label>
+    <input
+      type="text"
+      inputMode="email"
+      placeholder="Enter your email"
+      value={email}
+      className={errors.email ? "input-error" : ""}
+      onChange={(e) => handleEmailChange(e.target.value)}
+    />
 
-          <div className="form-group">
-            <label>Email</label>
+    {errors.email && (
+      <p className="field-error">
+        {errors.email}
+      </p>
+    )}
+  </div>
 
-            <input
-              type="text"
-              inputMode="email"
-              placeholder="Enter your email"
-              value={email}
-              className={
-                errors.email
-                  ? "input-error"
-                  : ""
-              }
-              onChange={(e) =>
-                handleEmailChange(
-                  e.target.value
-                )
-              }
-            />
+  {isLogin && (
+    <div className="form-group">
+      <label>Password</label>
+      <input
+        type="password"
+        placeholder="Enter your password"
+        value={password}
+        className={errors.password ? "input-error" : ""}
+        onChange={(e) => handlePasswordChange(e.target.value)}
+      />
 
-            {errors.email && (
-              <p className="field-error">
-                {errors.email}
-              </p>
-            )}
-          </div>
+      {errors.password && (
+        <p className="field-error">
+          {errors.password}
+        </p>
+      )}
+    </div>
+  )}
 
-          <div className="form-group">
-            <label>Password</label>
-
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              className={
-                errors.password
-                  ? "input-error"
-                  : ""
-              }
-              onChange={(e) =>
-                handlePasswordChange(
-                  e.target.value
-                )
-              }
-            />
-
-            {errors.password && (
-              <p className="field-error">
-                {errors.password}
-              </p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            className="primary-btn"
-            disabled={loading}
-          >
-            {loading
-              ? "Please wait..."
-              : isLogin
-              ? "Login"
-              : "Create Account"}
-          </button>
-        </form>
+  <button
+    type="submit"
+    className="primary-btn"
+    disabled={loading}
+  >
+    {loading
+      ? "Please wait..."
+      : isLogin
+      ? "Login"
+      : "Create Account"}
+  </button>
+</form>
 
         <div className="divider">
           <span>OR</span>
