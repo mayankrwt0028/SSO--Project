@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.routes"
 import userRoutes from "./routes/user.routes"
 import googleRoutes from './routes/google.routes'
 import githubRoutes from "./routes/github.routes.js";
+import adminRoutes from "./routes/admin.routes"
 
 import { prisma } from "../lib/prisma";
 
@@ -24,6 +25,7 @@ app.use("/auth", authRoutes)
 app.use("/users", userRoutes)
 app.use("/auth/google", googleRoutes)
 app.use("/auth/github", githubRoutes)
+app.use("/admin", adminRoutes)
 
 app.get("/",(req,res)=>{
   res.json({

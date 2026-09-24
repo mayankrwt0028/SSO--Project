@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:3000";
 
@@ -11,6 +12,7 @@ type FormErrors = {
 };
 
 function AuthPage() {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
 
   const [name, setName] = useState("");
@@ -369,6 +371,13 @@ function AuthPage() {
       )}
     </div>
   )}
+  <button
+  type="button"
+  onClick={() => navigate("/forgot-password")}
+  className="forgot-password"
+>
+  Forgot Password?
+</button>
 
   <button
     type="submit"

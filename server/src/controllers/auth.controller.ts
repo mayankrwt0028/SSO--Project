@@ -4,9 +4,11 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
 import {prisma} from "../../lib/prisma"
-import { sendPasswordSetupEmail } from "../services/email.service";
+import { sendPasswordSetupEmail, sendPasswordResetEmail } from "../services/email.service";
 
-const PASSWORD_SETUP_EXPIRY = 24 * 60 * 60 * 1000;
+// const PASSWORD_SETUP_EXPIRY = 24 * 60 * 60 * 1000;
+const PASSWORD_SETUP_EXPIRY = 60 * 1000;
+const PASSWORD_RESET_EXPIRY = 60 * 60 *1000;
 
 const hashSetupToken = (token : string)=>{
   return crypto 
@@ -117,10 +119,14 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET!,
-      { expiresIn: "7d" }
-    );
+  {
+    userId: user.id,
+    email:user.email,
+    role: user.role
+  },
+  process.env.JWT_SECRET!,
+  { expiresIn: "7d" }
+);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -160,6 +166,7 @@ export const getMe = async (req: Request, res:Response) =>{
         name: true,
         email: true,
         provider: true,
+        role:true,
         createdAt:true
       }
     })
@@ -259,6 +266,133 @@ export const createPassword = async (
 
     return res.status(500).json({
       message: "Unable to create password",
+    });
+  }
+};
+
+export const forgetPassword = async(req: Request, res:Response)=>{
+  try {
+    const {email} = req.body;
+
+    if(!email){
+      return res.status(400).json({
+        message: "Email is required"
+      })
+    }
+
+    const normalEmail = email.trim().toLowerCase()
+
+    const user = await prisma.user.findUnique({
+      where:{
+        email:normalEmail
+      }
+    })
+
+    if(!user || user.provider !== "manual"){
+      return res.status(200).json({
+        message: "If an account exist with this email, you will receive a password reset link"
+      })
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    const tokenHash = hashSetupToken(resetToken);
+
+    const expireAt = new Date(
+    Date.now() + PASSWORD_RESET_EXPIRY
+
+    )
+
+    await prisma.user.update({
+      where:{
+        id: user.id
+      },
+      data:{
+        passwordResetTokenHash : tokenHash,
+        passwordResetExpiresAt: expireAt
+      }
+    })
+
+    await sendPasswordResetEmail(
+      user.name,
+      user.email,
+      resetToken
+    )
+
+    return res.status(200).json({
+      message:"if an account exists with this email, you will receive a password reset link."
+    })
+
+  } catch (error) {
+    console.log("Frogot reset password:", error);
+
+    return res.status(500).json({
+      message: "Something went Wrong"
+    })
+  }
+}
+
+
+
+export const resetPassword = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({
+        message: "Reset information is missing",
+      });
+    }
+
+    const tokenHash = hashSetupToken(token);
+
+    const user = await prisma.user.findFirst({
+      where: {
+        passwordResetTokenHash: tokenHash,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "This password reset link is invalid",
+      });
+    }
+
+    if (
+      !user.passwordResetExpiresAt ||
+      user.passwordResetExpiresAt < new Date()
+    ) {
+      return res.status(400).json({
+        message: "This password reset link has expired",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashedPassword,
+
+        // Make token single-use
+        passwordResetTokenHash: null,
+        passwordResetExpiresAt: null,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Password reset successfully. You can now login.",
+    });
+  } catch (error) {
+    console.error("RESET PASSWORD ERROR:", error);
+
+    return res.status(500).json({
+      message: "Unable to reset password",
     });
   }
 };

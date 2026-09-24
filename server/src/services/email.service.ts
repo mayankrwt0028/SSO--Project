@@ -89,3 +89,61 @@ export const sendPasswordSetupEmail = async (
     throw new Error("Unable to send account setup email");
   }
 };
+
+export const sendPasswordResetEmail = async (
+  name: string,
+  email: string,
+  token: string
+) => {
+  const resetLink =
+    `${CLIENT_URL}/reset-password?token=${encodeURIComponent(token)}`;
+
+  try {
+    const response =
+      await client.transactionalEmails.sendTransacEmail({
+        sender: {
+          name: "SSO App",
+          email: process.env.EMAIL_FROM!,
+        },
+
+        to: [
+          {
+            email,
+            name,
+          },
+        ],
+
+        subject: "Reset your password",
+
+        htmlContent: `
+          <h2>Password Reset</h2>
+
+          <p>Hi ${name},</p>
+
+          <p>
+            We received a request to reset your password.
+          </p>
+
+          <p>
+            <a href="${resetLink}">
+              Reset Password
+            </a>
+          </p>
+
+          <p>
+            This link will expire in 1 hour.
+          </p>
+
+          <p>
+            If you did not request this, you can safely ignore this email.
+          </p>
+        `,
+      });
+
+    console.log("Password reset email sent:", response);
+  } catch (error) {
+    console.error("Brevo password reset email failed:", error);
+
+    throw new Error("Unable to send password reset email");
+  }
+};

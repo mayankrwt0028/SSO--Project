@@ -280,6 +280,65 @@ body {
   animation: toast-progress 3s linear forwards;
 }
 
+.forgot-password {
+  display: block;
+  width: 100%;
+
+  margin-top: -4px;
+  margin-bottom: 18px;
+
+  padding: 0;
+
+  border: none;
+  background: none;
+
+  text-align: right;
+
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.forgot-password:hover {
+  color: #1d4ed8;
+}
+
+.admin-users-header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-logout-btn {
+  padding: 9px 18px;
+
+  border: 1px solid #d9dee7;
+  border-radius: 7px;
+
+  background: #ffffff;
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.admin-logout-btn:hover {
+  background: #f3f6fa;
+  border-color: #c4ccd8;
+  color: #172033;
+}
+
 @keyframes toast-progress {
   from {
     width: 100%;
@@ -363,6 +422,8 @@ body {
 
   letter-spacing: 0.2px;
 }
+
+
 
 @keyframes users-spin {
   to {

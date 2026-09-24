@@ -5,6 +5,7 @@ interface User{
   name: string;
   email: string;
   provider:string;
+  role:string;
   createdAt?: string
 }
 
